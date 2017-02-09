@@ -48,9 +48,33 @@ public class Card {
             case CLUBS:
                 return "Clubs";
         }
+        return "null";
+    }
+
+    public String getValueString()  {
+        switch(suit) {
+            case ACE:   return "Ace";
+            case 2:   return "2";
+            case 3:   return "3";
+            case 4:   return "4";
+            case 5:   return "5";
+            case 6:   return "6";
+            case 7:   return "7";
+            case 8:   return "8";
+            case 9:   return "9";
+            case 10:  return "10";
+            case JACK:  return "Jack";
+            case QUEEN:  return "Queen";
+            case KING:  return "King";
+        }
+        return "null";
+    }
+
+    public Texture getImage()   {
+        return image;
     }
 
     public String toString()   {
-        return value+" of "+getSuitString();
+        return getValueString()+" of "+getSuitString();
     }
 }

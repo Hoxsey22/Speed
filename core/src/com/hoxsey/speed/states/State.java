@@ -1,4 +1,4 @@
-package com.hoxsey.speed;
+package com.hoxsey.speed.states;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,9 +10,9 @@ import com.badlogic.gdx.math.Vector3;
 public abstract class State {
     protected OrthographicCamera cam;
     protected Vector3 mouse;
-    protected StateManager sm;
+    protected com.hoxsey.speed.states.StateManager sm;
 
-    protected State(StateManager sm)   {
+    protected State(com.hoxsey.speed.states.StateManager sm)   {
         this.sm = sm;
         cam = new OrthographicCamera();
         mouse = new Vector3();
@@ -21,4 +21,5 @@ public abstract class State {
     protected abstract void handleInput();
     public abstract void update(float dt);
     public abstract void render(SpriteBatch sb);
+    public abstract void dispose();
 }

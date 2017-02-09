@@ -1,4 +1,4 @@
-package com.hoxsey.speed;
+package com.hoxsey.speed.states;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
