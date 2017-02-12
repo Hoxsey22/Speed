@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Stack;
 
 /**
@@ -24,24 +25,28 @@ public class Deck {
     private Stack<Card> deck = new Stack<Card>();
     private int id;
 
+    public Deck()   {
+        image = new Texture("back.png");
+        deck = new Stack<Card>();
+    }
+
     public Deck(ArrayList<Card> cardsContained, int id, int x, int y)   {
         this.id = id;
         image = new Texture("back.png");
         position = new Vector2(x,y);
+        deck = new Stack<Card>();
     }
 
-    public void shuffle(ArrayList<Card> cards)   {
-        int random;
-        for(int i = 0; i < cards.size(); i++)   {
-            random = (int)(Math.random()*cards.size())+0;
-            deck.push(cards.get(random));
-            cards.remove(random);
-        }
-
+    public void shuffle()   {
+        Collections.shuffle(deck);
     }
 
     public int getCardCount()   {
         return deck.size();
+    }
+
+    public Card getTopCard()    {
+        return deck.peek();
     }
 
     public Card draw()  {
@@ -63,6 +68,28 @@ public class Deck {
         }
         deck = temp;
     }
+
+    public void flipTopCard()   {
+        image = getTopCard().getImage();
+    }
+
+    public void push(Card card)  {
+        deck.push(card);
+    }
+
+    public Card pop()   {
+        return deck.pop();
+    }
+
+    public void set(Card card)  {
+        deck.pop();
+        deck.push(card);
+    }
+
+    public int size()   {
+        return deck.size();
+    }
+
 
     public String toString()   {
        return deck.toString();

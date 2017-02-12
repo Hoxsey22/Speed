@@ -23,6 +23,11 @@ public class Card {
     private int suit;
     private int value;
 
+    public Card(int suit, int value)   {
+        this.suit = suit;
+        this.value = value;
+    }
+
     public Card(int suit, int value, int x, int y)   {
         position = new Vector2(x,y);
         this.suit = suit;
@@ -35,6 +40,14 @@ public class Card {
 
     public int getValue()    {
         return value;
+    }
+
+    public void changePosition(int x, int y)    {
+        position.set(x,y);
+    }
+
+    public void changePosition(Vector2 position)    {
+        this.position = position;
     }
 
     public String getSuitString()  {
@@ -52,7 +65,7 @@ public class Card {
     }
 
     public String getValueString()  {
-        switch(suit) {
+        switch(value) {
             case ACE:   return "Ace";
             case 2:   return "2";
             case 3:   return "3";
@@ -66,8 +79,8 @@ public class Card {
             case JACK:  return "Jack";
             case QUEEN:  return "Queen";
             case KING:  return "King";
+            default: return "null";
         }
-        return "null";
     }
 
     public Texture getImage()   {
