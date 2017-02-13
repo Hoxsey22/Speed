@@ -2,6 +2,7 @@ package com.hoxsey.speed.states;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.hoxsey.speed.*;
 import com.hoxsey.speed.cards.Card;
 import com.hoxsey.speed.cards.Deck;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 public class PlayState extends State {
 
     public Texture card;
+    public Texture background;
     public Deck gameCards;
     public Deck player1;
     public Deck player2;
@@ -30,6 +32,7 @@ public class PlayState extends State {
     protected PlayState(StateManager sm) {
         super(sm);
         card = new Texture("back.png");
+        background = new Texture("playing_table.png");
         cam.setToOrtho(false, card.getWidth() * 6f + 30*6, card.getHeight() * 3f + 50*3 );
         loadGame();
     }
@@ -57,17 +60,23 @@ public class PlayState extends State {
 
         for (int i = 0; i < 5; i++)
             flip1.push(gameCards.pop());
+        flip1.changePosition(new Vector2( flip1.getTopCard().getImage().getWidth()-15, flip1.getTopCard().getImage().getHeight() + 65));
 
         for (int i = 0; i < 5; i++)
             flip2.push(gameCards.pop());
+        flip2.changePosition(new Vector2(65 + 4 * (flip2.getTopCard().getImage().getWidth() + 10),
+                flip2.getTopCard().getImage().getHeight() + 65));
 
         playable1.push(gameCards.pop());
         playable1.flipTopCard();
+        playable1.changePosition(new Vector2(flip1.getX()+playable1.getImage().getWidth()+40,flip1.getY()));
+
         playable2.push(gameCards.pop());
         playable2.flipTopCard();
+        playable2.changePosition(new Vector2(playable1.getX()+playable2.getImage().getWidth()+40,flip1.getY()));
 
-        player1Hand = new Hand(player1);
-        player2Hand = new Hand(player2);
+        player1Hand = new Hand(player1, 1);
+        player2Hand = new Hand(player2, 2);
 
 
 
@@ -89,11 +98,59 @@ public class PlayState extends State {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-            for(int i = 0 ; i < 1; i++)   {
-                for(int j = 0; j < 6; j++)   {
-                    sb.draw(card, card.getWidth()*j + 25*(j+1), card.getHeight()*i +25*(i+1), card.getWidth(), card.getHeight() );
-                }
+            sb.draw(background,0,0);
+            for(int i = 0 ; i < player1Hand.size(); i++)   {
+                sb.draw(player1Hand.getCardAt(i).getImage(),
+                        player1Hand.getCardAt(i).getX(),
+                        player1Hand.getCardAt(i).getY(),
+                        player1Hand.getCardAt(i).getImage().getWidth(),
+                        player1Hand.getCardAt(i).getImage().getHeight() );
+
             }
+
+        for(int i = 0 ; i < player2Hand.size(); i++)   {
+            sb.draw(player2Hand.getCardAt(i).getImage(),
+                    player2Hand.getCardAt(i).getX(),
+                    player2Hand.getCardAt(i).getY(),
+                    player2Hand.getCardAt(i).getImage().getWidth(),
+                    player2Hand.getCardAt(i).getImage().getHeight() );
+
+        }
+        sb.draw(flip1.getImage(),
+                flip1.getX(),
+                flip1.getY(),
+                flip1.getImage().getWidth(),
+                flip1.getImage().getHeight());
+
+        sb.draw(flip2.getImage(),
+                flip2.getX(),
+                flip2.getY(),
+                flip2.getImage().getWidth(),
+                flip2.getImage().getHeight());
+
+        sb.draw(playable1.getImage(),
+                playable1.getX(),
+                playable1.getY(),
+                playable1.getImage().getWidth(),
+                playable1.getImage().getHeight());
+
+        sb.draw(playable2.getImage(),
+                playable2.getX(),
+                playable2.getY(),
+                playable2.getImage().getWidth(),
+                playable2.getImage().getHeight());
+
+        sb.draw(player1Hand.getDeck().getImage(),
+                player1Hand.getDeck().getX(),
+                player1Hand.getDeck().getY(),
+                player1Hand.getDeck().getImage().getWidth(),
+                player1Hand.getDeck().getImage().getHeight());
+
+        sb.draw(player2Hand.getDeck().getImage(),
+                player2Hand.getDeck().getX(),
+                player2Hand.getDeck().getY(),
+                player2Hand.getDeck().getImage().getWidth(),
+                player2Hand.getDeck().getImage().getHeight());
 
         sb.end();
     }

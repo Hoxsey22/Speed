@@ -26,12 +26,19 @@ public class Card {
     public Card(int suit, int value)   {
         this.suit = suit;
         this.value = value;
+        loadImage();
     }
 
     public Card(int suit, int value, int x, int y)   {
         position = new Vector2(x,y);
         this.suit = suit;
         this.value = value;
+    }
+
+    private void loadImage()    {
+        String filename = "";
+        filename += suit+""+value+".png";
+        setImage(filename);
     }
 
     public int getSuit()    {
@@ -44,6 +51,18 @@ public class Card {
 
     public void changePosition(int x, int y)    {
         position.set(x,y);
+    }
+
+    public Vector2 getPostion() {
+        return position;
+    }
+
+    public float getX()   {
+        return position.x;
+    }
+
+    public float getY()   {
+        return position.y;
     }
 
     public void changePosition(Vector2 position)    {
@@ -81,6 +100,10 @@ public class Card {
             case KING:  return "King";
             default: return "null";
         }
+    }
+
+    public void setImage(String filename)  {
+        image = new Texture(filename);
     }
 
     public Texture getImage()   {

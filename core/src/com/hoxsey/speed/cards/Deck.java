@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+import java.awt.TextComponent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +40,30 @@ public class Deck {
 
     public void shuffle()   {
         Collections.shuffle(deck);
+    }
+
+    public void changePosition(int x, int y)    {
+        position.set(x,y);
+    }
+
+    public Vector2 getPostion() {
+        return position;
+    }
+
+    public float getX()   {
+        return position.x;
+    }
+
+    public float getY()   {
+        return position.y;
+    }
+
+    public Texture getImage()   {
+        return image;
+    }
+
+    public void changePosition(Vector2 position)    {
+        this.position = position;
     }
 
     public int getCardCount()   {
