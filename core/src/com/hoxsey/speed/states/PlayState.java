@@ -1,8 +1,14 @@
 package com.hoxsey.speed.states;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.hoxsey.speed.*;
 import com.hoxsey.speed.cards.Card;
 import com.hoxsey.speed.cards.Deck;
@@ -27,6 +33,9 @@ public class PlayState extends State {
     public Deck playable2;
     public Hand player1Hand;
     public Hand player2Hand;
+    public boolean isSelected;
+    private ShapeRenderer sr;
+    Card selectedCard;
 
 
     protected PlayState(StateManager sm) {
@@ -35,6 +44,10 @@ public class PlayState extends State {
         background = new Texture("playing_table.png");
         cam.setToOrtho(false, card.getWidth() * 6f + 30*6, card.getHeight() * 3f + 50*3 );
         loadGame();
+        isSelected = false;
+        Card selectedCard = new Card(0,1);
+        sr = new ShapeRenderer();
+
     }
 
     public void loadGame()  {
@@ -87,6 +100,63 @@ public class PlayState extends State {
     @Override
     protected void handleInput() {
 
+        Gdx.input.setInputProcessor(new InputProcessor() {
+
+            @Override
+            public boolean keyDown(int keycode) {
+                return false;
+            }
+
+            @Override
+            public boolean keyUp(int keycode) {
+                return false;
+            }
+
+            @Override
+            public boolean keyTyped(char character) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+
+                Vector3 mousePos = new Vector3( Gdx.input.getX(), Gdx.input.getY(), 0);
+                cam.unproject(mousePos);
+                if(player1Hand.hit(mousePos.x, mousePos.y) != null && isSelected == false) {
+                    selectedCard = player1Hand.hit(mousePos.x, mousePos.y);
+                    isSelected = true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                isSelected = false;
+                return false;
+            }
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+
+                if(isSelected && selectedCard != null) {
+                    Vector3 mousePos = new Vector3( Gdx.input.getX(), Gdx.input.getY(), 0); //Get the mouse-x and y like in your code
+                    cam.unproject(mousePos);
+                    selectedCard.changePosition(mousePos.x-selectedCard.getImage().getWidth()/2, (mousePos.y-selectedCard.getImage().getHeight()/2));
+
+                }
+                return false;
+            }
+
+            @Override
+            public boolean mouseMoved(int screenX, int screenY) {
+                return false;
+            }
+
+            @Override
+            public boolean scrolled(int amount) {
+                return false;
+            }
+        });
     }
 
     @Override
@@ -153,6 +223,19 @@ public class PlayState extends State {
                 player2Hand.getDeck().getImage().getHeight());
 
         sb.end();
+        sr.setProjectionMatrix(cam.combined);
+        for(int i = 0 ; i < player1Hand.size(); i++)   {
+            sr.begin(ShapeRenderer.ShapeType.Line);
+            sr.setColor(Color.RED);
+            sr.rect(player1Hand.getCardAt(i).getBounds().getX(),
+                    player1Hand.getCardAt(i).getBounds().getY(),
+                    player1Hand.getCardAt(i).getBounds().getWidth(),
+                    player1Hand.getCardAt(i).getBounds().getHeight());
+            sr.end();
+        }
+
+
+
     }
 
     @Override
