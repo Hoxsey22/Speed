@@ -1,12 +1,18 @@
 package com.hoxsey.speed.cards;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 
 /**
  * Created by Hoxsey on 2/9/2017.
  */
-public class Card {
+public class Card{
 
     public final static int SPADES = 0;
     public final static int HEARTS = 1;
@@ -22,17 +28,21 @@ public class Card {
     private Texture image;
     private int suit;
     private int value;
+    private Rectangle bounds;
 
     public Card(int suit, int value)   {
         this.suit = suit;
         this.value = value;
         loadImage();
+        bounds = new Rectangle(0,0,getImage().getWidth(),getImage().getHeight());
     }
 
     public Card(int suit, int value, int x, int y)   {
         position = new Vector2(x,y);
         this.suit = suit;
         this.value = value;
+        loadImage();
+        bounds = new Rectangle(0,0,getImage().getWidth(),getImage().getHeight());
     }
 
     private void loadImage()    {
@@ -49,8 +59,18 @@ public class Card {
         return value;
     }
 
-    public void changePosition(int x, int y)    {
+    public void setPosition(Vector2 position)   {
+        this.position = position;
+        bounds.setPosition(position);
+    }
+
+    public void setPosition(float x, float y)    {
         position.set(x,y);
+        bounds.setPosition(x,y);
+    }
+
+    public void changePosition(Vector2 position)    {
+        this.position = position;
     }
 
     public Vector2 getPostion() {
@@ -63,10 +83,6 @@ public class Card {
 
     public float getY()   {
         return position.y;
-    }
-
-    public void changePosition(Vector2 position)    {
-        this.position = position;
     }
 
     public String getSuitString()  {
@@ -103,14 +119,37 @@ public class Card {
     }
 
     public void setImage(String filename)  {
-        image = new Texture(filename);
+        if(value == 0)
+            image = new Texture("back.png");
+        else
+            image = new Texture(filename);
+    }
+
+    public Rectangle getBounds()    {
+        return bounds;
     }
 
     public Texture getImage()   {
         return image;
     }
 
+    public boolean isNeighbors(int value)    {
+        if(value == 1 && (this.value == 13 || this.value == 2 ))
+            return true;
+        else if(value == 13 && (this.value == 1 || this.value == 12))
+            return true;
+        else if(value == this.value +1 || value == this.value - 1)
+            return true;
+        else
+            return false;
+    }
+
+    
+
+
     public String toString()   {
         return getValueString()+" of "+getSuitString();
     }
+
+
 }

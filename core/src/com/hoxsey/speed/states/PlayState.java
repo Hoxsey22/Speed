@@ -45,7 +45,7 @@ public class PlayState extends State {
         cam.setToOrtho(false, card.getWidth() * 6f + 30*6, card.getHeight() * 3f + 50*3 );
         loadGame();
         isSelected = false;
-        Card selectedCard = new Card(0,1);
+        Card selectedCard = new Card(0,0);
         sr = new ShapeRenderer();
 
     }
@@ -132,6 +132,17 @@ public class PlayState extends State {
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
                 isSelected = false;
+                if(checkCardCollision(selectedCard, playable1)) {
+                    playable1.push(selectedCard);
+                    player1Hand.remove(selectedCard);
+                    return false;
+                }
+                else if(checkCardCollision(selectedCard, playable2)) {
+                    playable2.push(selectedCard);
+                    player1Hand.remove(selectedCard);
+                    return false;
+                }
+
                 return false;
             }
 
@@ -141,7 +152,7 @@ public class PlayState extends State {
                 if(isSelected && selectedCard != null) {
                     Vector3 mousePos = new Vector3( Gdx.input.getX(), Gdx.input.getY(), 0); //Get the mouse-x and y like in your code
                     cam.unproject(mousePos);
-                    selectedCard.changePosition(mousePos.x-selectedCard.getImage().getWidth()/2, (mousePos.y-selectedCard.getImage().getHeight()/2));
+                    selectedCard.setPosition(mousePos.x-selectedCard.getImage().getWidth()/2, (mousePos.y-selectedCard.getImage().getHeight()/2));
 
                 }
                 return false;
@@ -157,6 +168,17 @@ public class PlayState extends State {
                 return false;
             }
         });
+    }
+
+    public boolean checkCardCollision(Card card, Deck deck)    {
+        if(card.getBounds().overlaps(deck.getBounds()))    {
+            System.out.println(card.getValue()+" : "+deck.getTopCard().getValue());
+            return deck.getTopCard().isNeighbors(card.getValue());
+        }
+        else    {
+            System.out.println(card.getValue()+" : "+deck.getTopCard().getValue());
+            return false;
+        }
     }
 
     @Override
@@ -198,17 +220,17 @@ public class PlayState extends State {
                 flip2.getImage().getWidth(),
                 flip2.getImage().getHeight());
 
-        sb.draw(playable1.getImage(),
+        sb.draw(playable1.getTopCard().getImage(),
                 playable1.getX(),
                 playable1.getY(),
-                playable1.getImage().getWidth(),
-                playable1.getImage().getHeight());
+                playable1.getTopCard().getImage().getWidth(),
+                playable1.getTopCard().getImage().getHeight());
 
-        sb.draw(playable2.getImage(),
+        sb.draw(playable2.getTopCard().getImage(),
                 playable2.getX(),
                 playable2.getY(),
-                playable2.getImage().getWidth(),
-                playable2.getImage().getHeight());
+                playable2.getTopCard().getImage().getWidth(),
+                playable2.getTopCard().getImage().getHeight());
 
         sb.draw(player1Hand.getDeck().getImage(),
                 player1Hand.getDeck().getX(),

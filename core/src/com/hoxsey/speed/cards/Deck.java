@@ -1,6 +1,7 @@
 package com.hoxsey.speed.cards;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -25,10 +26,12 @@ public class Deck {
     private Texture image;
     private Stack<Card> deck = new Stack<Card>();
     private int id;
+    private Rectangle bounds;
 
     public Deck()   {
         image = new Texture("back.png");
         deck = new Stack<Card>();
+        bounds = new Rectangle(0,0,getImage().getWidth(),getImage().getHeight());
     }
 
     public Deck(ArrayList<Card> cardsContained, int id, int x, int y)   {
@@ -64,6 +67,7 @@ public class Deck {
 
     public void changePosition(Vector2 position)    {
         this.position = position;
+        bounds.setPosition(position.x, position.y);
     }
 
     public int getCardCount()   {
@@ -109,6 +113,10 @@ public class Deck {
     public void set(Card card)  {
         deck.pop();
         deck.push(card);
+    }
+
+    public Rectangle getBounds()  {
+        return bounds;
     }
 
     public int size()   {
