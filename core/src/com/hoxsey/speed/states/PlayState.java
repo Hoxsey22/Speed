@@ -85,6 +85,9 @@ public class PlayState extends State {
         playable1.changePosition(new Vector2(flip1.getX()+playable1.getImage().getWidth()+40,flip1.getY()));
 
         playable2.push(gameCards.pop());
+        //debug
+        playable2.push(new Card(0,2));
+        //=========//
         playable2.flipTopCard();
         playable2.changePosition(new Vector2(playable1.getX()+playable2.getImage().getWidth()+40,flip1.getY()));
 
@@ -125,24 +128,35 @@ public class PlayState extends State {
                 if(player1Hand.hit(mousePos.x, mousePos.y) != null && isSelected == false) {
                     selectedCard = player1Hand.hit(mousePos.x, mousePos.y);
                     isSelected = true;
+                    System.out.println("Something is selected" );
                 }
                 return false;
             }
 
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-                isSelected = false;
-                if(checkCardCollision(selectedCard, playable1)) {
-                    playable1.push(selectedCard);
-                    player1Hand.remove(selectedCard);
-                    return false;
-                }
-                else if(checkCardCollision(selectedCard, playable2)) {
-                    playable2.push(selectedCard);
-                    player1Hand.remove(selectedCard);
-                    return false;
-                }
 
+                if(selectedCard != null) {
+                    if (checkCardCollision(selectedCard, playable1)) {
+                        playable1.push(selectedCard);
+                        player1Hand.remove(selectedCard);
+                        player1Hand.reposition();
+                        isSelected = false;
+                        return false;
+                    } else if (checkCardCollision(selectedCard, playable2)) {
+                        playable2.push(selectedCard);
+                        player1Hand.remove(selectedCard);
+                        player1Hand.reposition();
+                        isSelected = false;
+                        return false;
+                    }
+                }
+                if(isSelected) {
+                    System.out.println("Fire");
+                    player1Hand.reposition(selectedCard);
+                    selectedCard = null;
+                }
+                isSelected = false;
                 return false;
             }
 
