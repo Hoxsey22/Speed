@@ -14,21 +14,40 @@ public class Hand{
     private Deck deck;
     private ArrayList<Vector2> p1Positions;
     private ArrayList<Vector2> p2Positions;
+    private int player;
 
-    public Hand(Deck deck, int player)   {
-        this.deck = deck;
+    public Hand(int player)   {
+        deck = new Deck();
         hand = new ArrayList<Card>(5);
+        this.player = player;
+
         if(player == 1)
             p1Positions = new ArrayList<Vector2>();
         else
             p2Positions = new ArrayList<Vector2>();
-        loadHand();
-        loadPositions(player);
-
 
     }
 
-    public void loadPositions(int player) {
+    public Hand(Deck deck, int player)   {
+        this.deck = deck;
+        hand = new ArrayList<Card>(5);
+        this.player = player;
+        if(player == 1)
+            p1Positions = new ArrayList<Vector2>();
+        else
+            p2Positions = new ArrayList<Vector2>();
+        init();
+        //debug
+        setHand();
+
+    }
+
+    public void init()  {
+        loadHand();
+        loadPositions();
+    }
+
+    public void loadPositions() {
 
         // player 1
         if(player == 1) {
@@ -40,7 +59,7 @@ public class Hand{
             p1Positions.add(new Vector2(1185,25));  // deck position
 
             for(int i = 0; i < hand.size(); i++)   {
-                hand.get(i).setPosition(p1Positions.get(i));
+                hand.get(i).setPosition(new Vector2(p1Positions.get(i)));
             }
             deck.changePosition(p1Positions.get(5));
         }
@@ -107,10 +126,23 @@ public class Hand{
         }
     }
 
+    public void addToDeck(Card card)    {
+        deck.push(card);
+    }
+
+
+    public void setDeck(Deck deck)   {
+        this.deck = deck;
+    }
+
     public Card hit(float x, float y)   {
         for(int i = 0; i < hand.size(); i++)   {
             if(hand.get(i).getBounds().contains(x,y))
                 return hand.get(i);
+        }
+        if(deck.getBounds().contains(x,y))    {
+            draw();
+            return null;
         }
         return null;
     }
@@ -119,28 +151,67 @@ public class Hand{
         return hand.size();
     }
 
-    public void removeCard()    {
-
-    }
-
     public Deck getDeck()   {
         return deck;
     }
 
     public void draw()  {
-        if(hand.size() < 5 && deck.size() > 0)
+        if(hand.size() < 5 && deck.size() > 0) {
             hand.add(deck.draw());
+            reposition();
+        }
+
     }
 
     public Card getCardAt(int pos)   {
         return hand.get(pos);
     }
 
-    public void remove(Card card)    {
-        hand.remove(hand.indexOf(card));
+    public void setHand()   {
+        hand.clear();
+        for(int i = 0; i < 5; i++)   {
+            hand.add(new Card(0,(i+1)));
+        }
+        reposition();
     }
 
+    public void remove(Card card)    {
+        hand.remove(hand.indexOf(card));
+        reposition();
+    }
 
+    public ArrayList<Card> getHand()    {
+        return hand;
+    }
+
+    public boolean isEmpty()   {
+        if(hand.isEmpty())
+            return true;
+        return false;
+    }
+
+    public void reposition()    {
+        for (int i = 0; i < hand.size(); i++)
+            if(player == 1 && hand.get(i) != null)
+                hand.get(i).setPosition(new Vector2(p1Positions.get(i)));
+            else if (player == 2 && hand.get(i) != null)
+                hand.get(i).setPosition(new Vector2(p2Positions.get(i)));
+    }
+    public void reposition(Card card)    {
+        System.out.println("repos card: "+hand.indexOf(card));
+        hand.get(hand.indexOf(card)).setPosition(new Vector2(p1Positions.get(hand.indexOf(card))));
+        for(int i = 0; i < p1Positions.size(); i++)   {
+            System.out.println(p1Positions.get(i).toString());
+        }
+    }
+
+    public void dispose()   {
+        for(int i = 0; i < hand.size(); i++)   {
+            hand.remove(i);
+        }
+        deck.dispose();
+
+    }
 
 
 }

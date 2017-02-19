@@ -81,8 +81,14 @@ public class Deck {
     public Card draw()  {
         if(deck.size() > 1)
             return deck.pop();
-        else
+        else if(deck.size() == 1)   {
+            changePosition(new Vector2(-1000,-1000));
+            return deck.pop();
+        }
+        else {
+            System.out.println("deck is Empty!");
             return null;
+        }
     }
 
     public void addToDeck(Card card) {
@@ -123,9 +129,22 @@ public class Deck {
         return deck.size();
     }
 
+    public boolean isEmpty()    {
+        if(deck.size() == 0)
+            return true;
+        return false;
+    }
+
 
     public String toString()   {
        return deck.toString();
+    }
+
+    public void dispose()   {
+        image.dispose();
+        for(int i = 0 ; i < deck.size(); i++)   {
+            deck.pop();
+        }
     }
 
 }

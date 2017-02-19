@@ -144,11 +144,12 @@ public class Card{
             return false;
     }
 
-    
-
-
     public String toString()   {
         return getValueString()+" of "+getSuitString();
+    }
+
+    public void dispose()   {
+        image.dispose();
     }
 
 

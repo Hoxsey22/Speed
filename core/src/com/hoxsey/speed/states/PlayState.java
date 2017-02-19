@@ -1,6 +1,7 @@
 package com.hoxsey.speed.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -35,7 +36,7 @@ public class PlayState extends State {
     public Hand player2Hand;
     public boolean isSelected;
     private ShapeRenderer sr;
-    Card selectedCard;
+    private Card selectedCard;
 
 
     protected PlayState(StateManager sm) {
@@ -112,6 +113,8 @@ public class PlayState extends State {
 
             @Override
             public boolean keyUp(int keycode) {
+                if(keycode == Input.Keys.A)
+                    gameover();
                 return false;
             }
 
@@ -130,13 +133,22 @@ public class PlayState extends State {
                     isSelected = true;
                     System.out.println("Something is selected" );
                 }
+                if(flip1.getBounds().contains(mousePos.x, mousePos.y))    {
+                    playable1.push(flip1.draw());
+                    isSelected = false;
+                }
+                //debug
+                if(flip2.getBounds().contains(mousePos.x, mousePos.y))    {
+                    playable2.push(flip2.draw());
+                    isSelected = false;
+                }
                 return false;
             }
 
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
-                if(selectedCard != null) {
+                if(isSelected) {
                     if (checkCardCollision(selectedCard, playable1)) {
                         playable1.push(selectedCard);
                         player1Hand.remove(selectedCard);
@@ -198,13 +210,61 @@ public class PlayState extends State {
     @Override
     public void update(float v) {
         handleInput();
+        if(player1Hand.size() == 0 && player1Hand.getDeck().size() == 0)    {
+            sm.set(new GameOverState(sm,0));
+        }
+        if(player2Hand.size() == 0 && player2Hand.getDeck().size() == 0)    {
+            sm.set(new GameOverState(sm,1));
+        }
+    }
+
+    public void gameover()  {
+        sm.set(new GameOverState(sm,0));
     }
 
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
+
         sb.begin();
             sb.draw(background,0,0);
+
+            sb.draw(flip1.getImage(),
+                    flip1.getX(),
+                    flip1.getY(),
+                    flip1.getImage().getWidth(),
+                    flip1.getImage().getHeight());
+
+            sb.draw(flip2.getImage(),
+                    flip2.getX(),
+                    flip2.getY(),
+                    flip2.getImage().getWidth(),
+                    flip2.getImage().getHeight());
+
+            sb.draw(playable1.getTopCard().getImage(),
+                    playable1.getX(),
+                    playable1.getY(),
+                    playable1.getTopCard().getImage().getWidth(),
+                    playable1.getTopCard().getImage().getHeight());
+
+            sb.draw(playable2.getTopCard().getImage(),
+                    playable2.getX(),
+                    playable2.getY(),
+                    playable2.getTopCard().getImage().getWidth(),
+                    playable2.getTopCard().getImage().getHeight());
+
+            sb.draw(player1Hand.getDeck().getImage(),
+                    player1Hand.getDeck().getX(),
+                    player1Hand.getDeck().getY(),
+                    player1Hand.getDeck().getImage().getWidth(),
+                    player1Hand.getDeck().getImage().getHeight());
+
+            sb.draw(player2Hand.getDeck().getImage(),
+                    player2Hand.getDeck().getX(),
+                    player2Hand.getDeck().getY(),
+                    player2Hand.getDeck().getImage().getWidth(),
+                    player2Hand.getDeck().getImage().getHeight());
+
             for(int i = 0 ; i < player1Hand.size(); i++)   {
                 sb.draw(player1Hand.getCardAt(i).getImage(),
                         player1Hand.getCardAt(i).getX(),
@@ -214,51 +274,16 @@ public class PlayState extends State {
 
             }
 
-        for(int i = 0 ; i < player2Hand.size(); i++)   {
-            sb.draw(player2Hand.getCardAt(i).getImage(),
-                    player2Hand.getCardAt(i).getX(),
-                    player2Hand.getCardAt(i).getY(),
-                    player2Hand.getCardAt(i).getImage().getWidth(),
-                    player2Hand.getCardAt(i).getImage().getHeight() );
+            for(int i = 0 ; i < player2Hand.size(); i++)   {
+                sb.draw(player2Hand.getCardAt(i).getImage(),
+                        player2Hand.getCardAt(i).getX(),
+                        player2Hand.getCardAt(i).getY(),
+                        player2Hand.getCardAt(i).getImage().getWidth(),
+                        player2Hand.getCardAt(i).getImage().getHeight() );
 
-        }
-        sb.draw(flip1.getImage(),
-                flip1.getX(),
-                flip1.getY(),
-                flip1.getImage().getWidth(),
-                flip1.getImage().getHeight());
-
-        sb.draw(flip2.getImage(),
-                flip2.getX(),
-                flip2.getY(),
-                flip2.getImage().getWidth(),
-                flip2.getImage().getHeight());
-
-        sb.draw(playable1.getTopCard().getImage(),
-                playable1.getX(),
-                playable1.getY(),
-                playable1.getTopCard().getImage().getWidth(),
-                playable1.getTopCard().getImage().getHeight());
-
-        sb.draw(playable2.getTopCard().getImage(),
-                playable2.getX(),
-                playable2.getY(),
-                playable2.getTopCard().getImage().getWidth(),
-                playable2.getTopCard().getImage().getHeight());
-
-        sb.draw(player1Hand.getDeck().getImage(),
-                player1Hand.getDeck().getX(),
-                player1Hand.getDeck().getY(),
-                player1Hand.getDeck().getImage().getWidth(),
-                player1Hand.getDeck().getImage().getHeight());
-
-        sb.draw(player2Hand.getDeck().getImage(),
-                player2Hand.getDeck().getX(),
-                player2Hand.getDeck().getY(),
-                player2Hand.getDeck().getImage().getWidth(),
-                player2Hand.getDeck().getImage().getHeight());
-
+            }
         sb.end();
+
         sr.setProjectionMatrix(cam.combined);
         for(int i = 0 ; i < player1Hand.size(); i++)   {
             sr.begin(ShapeRenderer.ShapeType.Line);
@@ -277,5 +302,14 @@ public class PlayState extends State {
     @Override
     public void dispose() {
         card.dispose();
+        background.dispose();
+        player1Hand.dispose();
+        player2Hand.dispose();
+        player1.dispose();
+        player2.dispose();
+        flip1.dispose();
+        flip2.dispose();
+        playable1.dispose();
+        playable2.dispose();
     }
 }

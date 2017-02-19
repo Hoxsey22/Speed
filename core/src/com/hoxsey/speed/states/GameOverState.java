@@ -23,6 +23,7 @@ public class GameOverState extends State {
         }
         else
             statusImage = new Texture("lose.png");
+        cam.setToOrtho(false, Speed.WIDTH, Speed.HEIGHT);
     }
 
     @Override
@@ -38,8 +39,8 @@ public class GameOverState extends State {
     @Override
     public void render(SpriteBatch sb) {
         sb.begin();
-            sb.draw(background, 0,0, Speed.WIDTH, Speed.HEIGHT);
-            sb.draw(statusImage, Speed.WIDTH/2 - statusImage.getWidth(), Speed.HEIGHT/2 - statusImage.getHeight());
+            sb.draw(background, 0,0);
+            sb.draw(statusImage, Speed.WIDTH/2-statusImage.getWidth()/4, Speed.HEIGHT/2);
         sb.end();
     }
 
