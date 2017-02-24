@@ -25,16 +25,11 @@ public class NPC {
         hand = new Hand(2);
         difficulty = 1;
         flipFlag = false;
-        timer = new Timer();
-        timer.scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
 
-            }
-        },1,1);
     }
 
     public void setupHand() {
+        hand.setDeck(deck);
         hand.init();
     }
 
@@ -43,7 +38,7 @@ public class NPC {
     }
 
     public void addToDeck(Card card)   {
-        hand.addToDeck(card);
+        deck.push(card);
     }
 
     public void flagFlip()  {
@@ -107,18 +102,23 @@ public class NPC {
 
     }
 
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public Hand getHand() {
+        return hand;
+    }
+
+    public int getDifficulty() {
+        return difficulty;
+    }
+
     public boolean isDone()    {
         if(deck.isEmpty() && hand.isEmpty())
             return true;
         return false;
     }
-
-    private Timer.Task task = new Timer.Task() {
-        @Override
-        public void run() {
-            nextCard();
-        }
-    };
 
 
 }

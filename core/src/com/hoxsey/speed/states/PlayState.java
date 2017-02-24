@@ -14,6 +14,7 @@ import com.hoxsey.speed.*;
 import com.hoxsey.speed.cards.Card;
 import com.hoxsey.speed.cards.Deck;
 import com.hoxsey.speed.cards.Hand;
+import com.hoxsey.speed.players.NPC;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 public class PlayState extends State {
 
     public Texture card;
+    public NPC npc;
     public Texture background;
     public Deck gameCards;
     public Deck player1;
@@ -44,6 +46,8 @@ public class PlayState extends State {
         card = new Texture("back.png");
         background = new Texture("playing_table.png");
         cam.setToOrtho(false, card.getWidth() * 6f + 30*6, card.getHeight() * 3f + 50*3 );
+        npc = new NPC();
+
         loadGame();
         isSelected = false;
         Card selectedCard = new Card(0,0);
@@ -70,7 +74,8 @@ public class PlayState extends State {
             player1.push(gameCards.pop());
 
         for (int i = 0; i < 20; i++)
-            player2.push(gameCards.pop());
+            npc.addToDeck(gameCards.pop());
+        npc.setupHand();
 
         for (int i = 0; i < 5; i++)
             flip1.push(gameCards.pop());
@@ -93,7 +98,7 @@ public class PlayState extends State {
         playable2.changePosition(new Vector2(playable1.getX()+playable2.getImage().getWidth()+40,flip1.getY()));
 
         player1Hand = new Hand(player1, 1);
-        player2Hand = new Hand(player2, 2);
+        //player2Hand = new Hand(player2, 2);
 
 
 
@@ -213,9 +218,6 @@ public class PlayState extends State {
         if(player1Hand.size() == 0 && player1Hand.getDeck().size() == 0)    {
             sm.set(new GameOverState(sm,0));
         }
-        if(player2Hand.size() == 0 && player2Hand.getDeck().size() == 0)    {
-            sm.set(new GameOverState(sm,1));
-        }
     }
 
     public void gameover()  {
@@ -259,11 +261,11 @@ public class PlayState extends State {
                     player1Hand.getDeck().getImage().getWidth(),
                     player1Hand.getDeck().getImage().getHeight());
 
-            sb.draw(player2Hand.getDeck().getImage(),
-                    player2Hand.getDeck().getX(),
-                    player2Hand.getDeck().getY(),
-                    player2Hand.getDeck().getImage().getWidth(),
-                    player2Hand.getDeck().getImage().getHeight());
+            sb.draw(npc.getDeck().getImage(),
+                    npc.getDeck().getX(),
+                    npc.getDeck().getY(),
+                    npc.getDeck().getImage().getWidth(),
+                    npc.getDeck().getImage().getHeight());
 
             for(int i = 0 ; i < player1Hand.size(); i++)   {
                 sb.draw(player1Hand.getCardAt(i).getImage(),
@@ -274,12 +276,12 @@ public class PlayState extends State {
 
             }
 
-            for(int i = 0 ; i < player2Hand.size(); i++)   {
-                sb.draw(player2Hand.getCardAt(i).getImage(),
-                        player2Hand.getCardAt(i).getX(),
-                        player2Hand.getCardAt(i).getY(),
-                        player2Hand.getCardAt(i).getImage().getWidth(),
-                        player2Hand.getCardAt(i).getImage().getHeight() );
+            for(int i = 0 ; i < npc.getHand().size(); i++)   {
+                sb.draw(npc.getHand().getCardAt(i).getImage(),
+                        npc.getHand().getCardAt(i).getX(),
+                        npc.getHand().getCardAt(i).getY(),
+                        npc.getHand().getCardAt(i).getImage().getWidth(),
+                        npc.getHand().getCardAt(i).getImage().getHeight() );
 
             }
         sb.end();
