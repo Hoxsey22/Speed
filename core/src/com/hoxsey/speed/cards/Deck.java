@@ -82,7 +82,7 @@ public class Deck {
         if(deck.size() > 1)
             return deck.pop();
         else if(deck.size() == 1)   {
-            changePosition(new Vector2(-1000,-1000));
+            //changePosition(new Vector2(-1000,-1000));
             return deck.pop();
         }
         else {
@@ -94,6 +94,11 @@ public class Deck {
     public void addToDeck(Card card) {
         deck.push(card);
         image = card.getImage();
+    }
+
+    public void emptyDeck() {
+        for(int i = 0; i < deck.size(); i++)
+            deck.pop();
     }
 
     public void flipDeck()  {
@@ -142,9 +147,9 @@ public class Deck {
 
     public void dispose()   {
         image.dispose();
-        for(int i = 0 ; i < deck.size(); i++)   {
+       /* for(int i = 0 ; i < deck.size(); i++)   {
             deck.pop();
-        }
+        }*/
     }
 
 }

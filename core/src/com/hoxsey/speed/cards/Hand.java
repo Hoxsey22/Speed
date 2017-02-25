@@ -73,7 +73,7 @@ public class Hand{
             p2Positions.add(new Vector2(1185,776));  // deck position
 
             for(int i = 0; i < hand.size(); i++)   {
-                hand.get(i).changePosition(p2Positions.get(i));
+                hand.get(i).setPosition(p2Positions.get(i));
             }
             deck.changePosition(p2Positions.get(5));
 

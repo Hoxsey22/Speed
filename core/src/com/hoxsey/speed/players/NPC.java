@@ -1,5 +1,6 @@
 package com.hoxsey.speed.players;
 
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.utils.Timer;
 import com.hoxsey.speed.cards.Card;
 import com.hoxsey.speed.cards.Deck;
@@ -18,23 +19,72 @@ public class NPC {
     private int difficulty;
     private boolean flipFlag;
     private Card selectedCard;
-    private Timer timer;
+    private float timer;
+    private Deck face1;
+    private Deck face2;
+    private int marked;
 
-    public NPC()   {
+    public NPC(int difficulty)   {
         deck = new Deck();
         hand = new Hand(2);
-        difficulty = 1;
+        this.difficulty = difficulty;
         flipFlag = false;
+        System.out.println(difficulty);
 
+    }
+
+    public void loadFaceDecks(Deck d1, Deck d2) {
+        face1 = d1;
+        face2 = d2;
     }
 
     public void setupHand() {
         hand.setDeck(deck);
         hand.init();
+        selectedCard = hand.getCardAt(0);
+        marked = 0;
     }
 
+    public void update(float dt)    {
+        timer += dt;
+
+        switch (difficulty){
+            case 1:
+                if(timer > 2.5)
+                    play();
+                break;
+            case 2:
+                if(timer > 1.5)
+                    play();
+                break;
+            case 3:
+                if(timer > 0.5)
+                    play();
+                break;
+        }
+
+
+
+
+    }
+
+    public void play()  {
+        if(!playCard())
+            nextCard();
+
+        if(marked > hand.size())
+            flagFlip();
+        timer = 0;
+    }
+
+
     public void draw()  {
-        hand.draw();
+        System.out.println(hand.size());
+        if(hand.size() == 5)
+            return;
+        for(int i = hand.size(); i < 5; i++)
+            hand.draw();
+        marked = 0;
     }
 
     public void addToDeck(Card card)   {
@@ -49,25 +99,24 @@ public class NPC {
         flipFlag = false;
     }
 
-    public boolean isFlipFlagged()  {
-        return flipFlag;
-    }
-
     public void nextCard()  {
         int position = hand.getHand().indexOf(selectedCard);
 
         if(deck.isEmpty() && hand.size() == 1) {
+            marked++;
             return;
         }
         else if(hand.size() == 1) {
-            hand.draw();
+            draw();
             selectedCard = hand.getCardAt(position+1);
         }
         else if(position == hand.size()-1)  {
             selectedCard = hand.getCardAt(0);
+            marked++;
         }
         else {
             selectedCard = hand.getCardAt(position+1);
+            marked++;
         }
     }
 
@@ -80,7 +129,7 @@ public class NPC {
         }
         else if(hand.size() == 1) {
             hand.remove(selectedCard);
-            hand.draw();
+            draw();
             selectedCard = hand.getCardAt(0);
         }
         else if(position == hand.size()-1)  {
@@ -94,11 +143,22 @@ public class NPC {
 
     }
 
-    public void playCard(Deck playCard)  {
-        if(selectedCard.isNeighbors(playCard.getTopCard().getValue())) {
-            playCard.push(selectedCard);
+    public boolean playCard()  {
+
+        if(selectedCard.isNeighbors(face1.getTopCard().getValue())) {
+           face1.push(selectedCard);
             playCardHelper();
+            draw();
+            return true;
         }
+        if(selectedCard.isNeighbors(face2.getTopCard().getValue())) {
+            face2.push(selectedCard);
+            playCardHelper();
+            draw();
+            return true;
+        }
+        return false;
+
 
     }
 
@@ -114,10 +174,18 @@ public class NPC {
         return difficulty;
     }
 
+    public Card getSelectedCard() {
+        return selectedCard;
+    }
+
     public boolean isDone()    {
         if(deck.isEmpty() && hand.isEmpty())
             return true;
         return false;
+    }
+
+    public boolean isFlipFlag() {
+        return flipFlag;
     }
 
 

@@ -39,19 +39,23 @@ public class PlayState extends State {
     public boolean isSelected;
     private ShapeRenderer sr;
     private Card selectedCard;
+    private boolean flipFlag;
+    //debugg
+    private float time;
 
 
-    protected PlayState(StateManager sm) {
+    protected PlayState(StateManager sm, int difficulty) {
         super(sm);
         card = new Texture("back.png");
         background = new Texture("playing_table.png");
         cam.setToOrtho(false, card.getWidth() * 6f + 30*6, card.getHeight() * 3f + 50*3 );
-        npc = new NPC();
+        npc = new NPC(difficulty);
 
         loadGame();
         isSelected = false;
         Card selectedCard = new Card(0,0);
         sr = new ShapeRenderer();
+        flipFlag = false;
 
     }
 
@@ -99,6 +103,7 @@ public class PlayState extends State {
 
         player1Hand = new Hand(player1, 1);
         //player2Hand = new Hand(player2, 2);
+        npc.loadFaceDecks(playable1,playable2);
 
 
 
@@ -136,17 +141,17 @@ public class PlayState extends State {
                 if(player1Hand.hit(mousePos.x, mousePos.y) != null && isSelected == false) {
                     selectedCard = player1Hand.hit(mousePos.x, mousePos.y);
                     isSelected = true;
-                    System.out.println("Something is selected" );
                 }
-                if(flip1.getBounds().contains(mousePos.x, mousePos.y))    {
-                    playable1.push(flip1.draw());
+                if(flip2.getBounds().contains(mousePos.x, mousePos.y))    {
+                    flipFlag = true;
                     isSelected = false;
                 }
-                //debug
+                /*debug
                 if(flip2.getBounds().contains(mousePos.x, mousePos.y))    {
                     playable2.push(flip2.draw());
                     isSelected = false;
-                }
+                }*/
+                System.out.println(flipFlag+":"+npc.isFlipFlag());
                 return false;
             }
 
@@ -213,11 +218,36 @@ public class PlayState extends State {
     }
 
     @Override
-    public void update(float v) {
+    public void update(float dt) {
         handleInput();
+        time +=dt;
+
+        if(npc.isDone())    {
+            sm.set(new GameOverState(sm,1));
+        }
         if(player1Hand.size() == 0 && player1Hand.getDeck().size() == 0)    {
             sm.set(new GameOverState(sm,0));
         }
+
+        npc.update(dt);
+
+        if(flipFlag && npc.isFlipFlag())    {
+            if(flip1.isEmpty()) {
+                flip1 = playable1;
+                flip1.flipDeck();
+                playable1.emptyDeck();
+
+                flip2 = playable2;
+                flip2.flipDeck();
+                playable2.emptyDeck();
+            }
+            playable1.push(flip1.draw());
+            playable2.push(flip2.draw());
+            flipFlag = false;
+            npc.unflagFlip();
+        }
+
+
     }
 
     public void gameover()  {
@@ -287,13 +317,13 @@ public class PlayState extends State {
         sb.end();
 
         sr.setProjectionMatrix(cam.combined);
-        for(int i = 0 ; i < player1Hand.size(); i++)   {
+        if(npc.getSelectedCard() != null) {
             sr.begin(ShapeRenderer.ShapeType.Line);
             sr.setColor(Color.RED);
-            sr.rect(player1Hand.getCardAt(i).getBounds().getX(),
-                    player1Hand.getCardAt(i).getBounds().getY(),
-                    player1Hand.getCardAt(i).getBounds().getWidth(),
-                    player1Hand.getCardAt(i).getBounds().getHeight());
+            sr.rect(npc.getSelectedCard().getBounds().getX(),
+                    npc.getSelectedCard().getBounds().getY(),
+                    npc.getSelectedCard().getBounds().getWidth(),
+                    npc.getSelectedCard().getBounds().getHeight());
             sr.end();
         }
 

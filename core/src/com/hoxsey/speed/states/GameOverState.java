@@ -1,5 +1,6 @@
 package com.hoxsey.speed.states;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,6 +14,7 @@ public class GameOverState extends State {
 
     public Texture background;
     public Texture statusImage;
+    public float timer;
 
 
     public GameOverState(StateManager sm, int status)  {
@@ -29,10 +31,15 @@ public class GameOverState extends State {
     @Override
     protected void handleInput() {
 
+        if(Gdx.input.justTouched() && timer  > 3) {
+            sm.set(new MenuState(sm));
+        }
+
     }
 
     @Override
     public void update(float dt) {
+        timer += dt;
         handleInput();
     }
 
