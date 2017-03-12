@@ -1,6 +1,7 @@
 package com.hoxsey.speed.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,6 +25,8 @@ public class MenuState extends State {
     private Rectangle pos1;
     private Rectangle pos2;
     private Rectangle pos3;
+    private Sound shuffleSound;
+    private Sound passoutSound;
 
     public MenuState(StateManager sm) {
         super(sm);
@@ -39,6 +42,8 @@ public class MenuState extends State {
         pos3 = new Rectangle(299,19,easyButton.getWidth(),easyButton.getHeight());
         sr = new ShapeRenderer();
         cam.setToOrtho(false, Speed.WIDTH, Speed.HEIGHT);
+        shuffleSound = Gdx.audio.newSound(Gdx.files.internal("cardFan2.wav"));
+
 
     }
 
@@ -49,14 +54,17 @@ public class MenuState extends State {
         cam.unproject(mousePos);
         if(Gdx.input.justTouched()) {
             if (pos1.contains(mousePos.x, mousePos.y)) {
+                shuffleSound.play();
                 sm.set(new PlayState(sm, 1));
                 dispose();
             }
             else if (pos2.contains(mousePos.x, mousePos.y)) {
+                shuffleSound.play();
                 sm.set(new PlayState(sm, 2));
                 dispose();
             }
             else if (pos3.contains(mousePos.x, mousePos.y)) {
+                shuffleSound.play();
                 sm.set(new PlayState(sm, 3));
                 dispose();
             }

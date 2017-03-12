@@ -3,6 +3,7 @@ package com.hoxsey.speed.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
  */
 public class PlayState extends State {
 
+    private Sound passoutSound;
     public Texture card;
     public NPC npc;
     public Texture background;
@@ -40,6 +42,7 @@ public class PlayState extends State {
     private ShapeRenderer sr;
     private Card selectedCard;
     private boolean flipFlag;
+    public Sound placeSound;
     //debugg
     private float time;
     //
@@ -57,6 +60,7 @@ public class PlayState extends State {
         Card selectedCard = new Card(0,0);
         sr = new ShapeRenderer();
         flipFlag = false;
+        placeSound = Gdx.audio.newSound(Gdx.files.internal("cardPlace1.wav"));
 
     }
 
@@ -165,12 +169,14 @@ public class PlayState extends State {
                         player1Hand.remove(selectedCard);
                         player1Hand.reposition();
                         isSelected = false;
+                        placeSound.play();
                         return false;
                     } else if (checkCardCollision(selectedCard, playable2)) {
                         playable2.push(selectedCard);
                         player1Hand.remove(selectedCard);
                         player1Hand.reposition();
                         isSelected = false;
+                        placeSound.play();
                         return false;
                     }
                 }
@@ -233,12 +239,14 @@ public class PlayState extends State {
         npc.update(dt);
 
         if(flipFlag && npc.isFlipFlag())    {
-            if(flip1.isEmpty()) {
+            if(flip1.size() == 1) {
                 flip1 = playable1;
+                flip1.shuffle();
                 flip1.flipDeck();
                 playable1.emptyDeck();
 
                 flip2 = playable2;
+                flip1.shuffle();
                 flip2.flipDeck();
                 playable2.emptyDeck();
             }
@@ -344,5 +352,6 @@ public class PlayState extends State {
         flip2.dispose();
         playable1.dispose();
         playable2.dispose();
+        placeSound.dispose();
     }
 }

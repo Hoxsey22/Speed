@@ -37,8 +37,6 @@ public class Hand{
         else
             p2Positions = new ArrayList<Vector2>();
         init();
-        //debug
-        setHand();
 
     }
 

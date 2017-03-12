@@ -1,5 +1,7 @@
 package com.hoxsey.speed.players;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.utils.Timer;
 import com.hoxsey.speed.cards.Card;
@@ -23,6 +25,7 @@ public class NPC {
     private Deck face1;
     private Deck face2;
     private int marked;
+    private Sound placeSound;
 
     public NPC(int difficulty)   {
         deck = new Deck();
@@ -30,6 +33,7 @@ public class NPC {
         this.difficulty = difficulty;
         flipFlag = false;
         System.out.println(difficulty);
+        placeSound = Gdx.audio.newSound(Gdx.files.internal("cardPlace1.wav"));
 
     }
 
@@ -148,6 +152,7 @@ public class NPC {
         if(selectedCard.isNeighbors(face1.getTopCard().getValue())) {
            face1.push(selectedCard);
             playCardHelper();
+            placeSound.play();
             draw();
             return true;
         }
@@ -187,6 +192,11 @@ public class NPC {
     public boolean isFlipFlag() {
         return flipFlag;
     }
+
+    public void dispose()   {
+        placeSound.dispose();
+    }
+
 
 
 }
